@@ -18,12 +18,14 @@ describe('Pokemon', () => {
           basePower: 0,
           name: 'a',
           nature: AttackNature.PHYSICAL,
+          criticalCoefficient: 1,
         },
         {
           precision: 0,
           basePower: 0,
           name: 'b',
           nature: AttackNature.PHYSICAL,
+          criticalCoefficient: 1,
         },
       ],
     });

@@ -2,8 +2,8 @@
   <span>Combat</span>
   <div>First pokemon : {{ firstPokemon.name }}</div>
   <div>Second pokemon : {{ secondPokemon.name }}</div>
-  <button (click)="start()">Start combat</button>
-
+  <button (click)="start()" id="startButton">Start combat</button>
+  <app-play-button [combatState]="combat.state" (onClick)="handlePlay($event)" id="pauseButton" hidden="true"></app-play-button>
   <div>
     <p *ngFor="let log of logs">
       {{ log }}

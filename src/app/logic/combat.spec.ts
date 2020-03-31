@@ -1,4 +1,4 @@
-import { Combat } from './Combat';
+import { Combat, CombatState } from './Combat';
 import { givenPokemon } from './utils';
 import { Attack, AttackNature } from './Attack';
 import { PokemonType } from './Pokemon';
@@ -70,6 +70,7 @@ describe('Combat', () => {
           name: 'AttackA',
           nature: AttackNature.PHYSICAL,
           precision: 0.2,
+          criticalCoefficient: 1,
         },
       ],
     });
@@ -86,6 +87,7 @@ describe('Combat', () => {
       name: 'AttackA',
       nature: AttackNature.PHYSICAL,
       precision: 0.2,
+      criticalCoefficient: 1,
     };
 
     const firstPokemon = givenPokemon({
@@ -102,7 +104,7 @@ describe('Combat', () => {
     combat.attacker = firstPokemon;
     combat.defender = secondPokemon;
 
-    combat.attack(firstPokemonAttack, () => 0);
+    combat.attack(firstPokemonAttack);
     expect(secondPokemon.hp).toEqual(96);
   });
 
@@ -112,6 +114,7 @@ describe('Combat', () => {
       name: 'AttackA',
       nature: AttackNature.PHYSICAL,
       precision: 0.2,
+      criticalCoefficient: 3,
     };
 
     const firstPokemon = givenPokemon({
@@ -157,6 +160,7 @@ describe('Combat', () => {
             name: 'AttackA',
             basePower: 50,
             precision: 10,
+            criticalCoefficient: 1,
           },
         ],
       }),
@@ -171,15 +175,16 @@ describe('Combat', () => {
         attacks: [
           {
             nature: AttackNature.PHYSICAL,
-            name: 'AttackA',
+            name: 'AttackB',
             basePower: 50,
             precision: 10,
+            criticalCoefficient: 1,
           },
         ],
       }),
     );
 
-    const winner = await combat.start(10, () => combat.attacker.attacks[0]);
+    const winner = await combat.start(10);
     expect(winner).toBe(combat.secondPokemon);
   });
 
@@ -199,6 +204,7 @@ describe('Combat', () => {
             name: 'AttackA',
             basePower: 50,
             precision: 10,
+            criticalCoefficient: 1,
           },
         ],
       }),
@@ -213,23 +219,37 @@ describe('Combat', () => {
         attacks: [
           {
             nature: AttackNature.PHYSICAL,
-            name: 'AttackA',
+            name: 'AttackB',
             basePower: 50,
             precision: 10,
+            criticalCoefficient: 1,
           },
         ],
       }),
     );
 
-    const winner = await combat.start(10, () => combat.attacker.attacks[0]);
+    const winner = await combat.start(10);
     expect(winner).toBe(combat.firstPokemon);
   });
 
-  it('should handle error happening in a combat', () => {
+  it('should not start twice a combat', () => {
     const combat = new Combat(givenPokemon(), givenPokemon());
+    combat.start(500);
 
-    return expect(
-      combat.start(10, () => (undefined as unknown) as Attack),
-    ).rejects.toHaveProperty('message', 'Invalid attack');
+    return expect(() => combat.start(500)).toThrow('Game already started');
+  });
+
+  it('should invert state when the state is RUNNING', () => {
+    const combat = new Combat(givenPokemon(), givenPokemon());
+    combat.state = CombatState.RUNNING;
+    combat.invertState();
+    expect(combat.state).toEqual(CombatState.PAUSE);
+  });
+
+  it('should invert state when the state is PAUSE', () => {
+    const combat = new Combat(givenPokemon(), givenPokemon());
+    combat.state = CombatState.PAUSE;
+    combat.invertState();
+    expect(combat.state).toEqual(CombatState.RUNNING);
   });
 });

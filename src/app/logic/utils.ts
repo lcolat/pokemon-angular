@@ -28,6 +28,7 @@ export function givenPokemon(data?: PokemonData): Pokemon {
         basePower: 20,
         nature: AttackNature.PHYSICAL,
         precision: 2,
+        criticalCoefficient: 3,
       },
     ],
   );

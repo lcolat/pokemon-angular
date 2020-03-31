@@ -1,13 +1,19 @@
 import { Pokemon } from './Pokemon';
 import { Attack } from './Attack';
 import { EventEmitter } from '@angular/core';
-import get = Reflect.get;
 
 export type RandomFn = () => number;
+
+export enum CombatState {
+  RUNNING = 'RUNNING',
+  PAUSE = 'PAUSE',
+}
 
 export class Combat extends EventEmitter<string> {
   public attacker: Pokemon;
   public defender: Pokemon;
+  public state: CombatState = CombatState.PAUSE;
+  private itvId: number | undefined;
 
   constructor(
     public readonly firstPokemon: Pokemon,
@@ -45,8 +51,8 @@ export class Combat extends EventEmitter<string> {
     const isCritical = crititalRandomFn() > 0.8;
 
     if (isCritical) {
-      this.emit('The attack is critical!');
-      offensiveStat *= 3;
+      this.emit(`The attack is critical (x${attack.criticalCoefficient})!`);
+      offensiveStat *= attack.criticalCoefficient;
     }
 
     return (
@@ -73,39 +79,54 @@ export class Combat extends EventEmitter<string> {
     this.switchPokemons();
   }
 
-  private end(winner: Pokemon, looser: Pokemon, itv: number): Pokemon {
+  private end(winner: Pokemon, looser: Pokemon): Pokemon {
     this.emit(`${looser.name} is dead`);
     this.emit(`${winner.name} won`);
-    clearInterval(itv);
+    clearInterval(this.itvId);
+    this.itvId = undefined;
     return winner;
   }
 
-  start(roundInMs = 500, getAttack?: () => Attack): Promise<Pokemon> {
+  invertState() {
+    this.state =
+      this.state === CombatState.RUNNING
+        ? CombatState.PAUSE
+        : CombatState.RUNNING;
+  }
+
+  start(roundInMs = 500): Promise<Pokemon> {
+    if (typeof this.itvId === 'number') {
+      throw new Error('Game already started');
+    }
+
+    this.state = CombatState.RUNNING;
+
     return new Promise((resolve, reject) => {
-      const itv = setInterval(() => {
-        if (this.firstPokemon.isDead()) {
-          return resolve(this.end(this.secondPokemon, this.firstPokemon, itv));
-        }
-
-        if (this.secondPokemon.isDead()) {
-          return resolve(this.end(this.firstPokemon, this.secondPokemon, itv));
-        }
-
-        this.emit('New round');
-
-        const getAttackFn =
-          getAttack ?? this.attacker.getRandomAttack.bind(this.attacker);
-
+      this.itvId = setInterval(() => {
         try {
-          const attack = getAttackFn();
+          if (this.state !== CombatState.RUNNING) {
+            return;
+          }
+
+          this.emit('New round');
+
+          const attack = this.attacker.getRandomAttack();
 
           this.emit(
             `${this.attacker.name} will attack ${this.defender.name} with ${attack?.name}`,
           );
 
           this.attack(attack);
+
+          if (this.firstPokemon.isDead()) {
+            return resolve(this.end(this.secondPokemon, this.firstPokemon));
+          }
+
+          if (this.secondPokemon.isDead()) {
+            return resolve(this.end(this.firstPokemon, this.secondPokemon));
+          }
         } catch (err) {
-          clearInterval(itv);
+          clearInterval(this.itvId);
           reject(err);
         }
       }, roundInMs);

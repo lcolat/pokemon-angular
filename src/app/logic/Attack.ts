@@ -9,5 +9,6 @@ export class Attack {
     public readonly nature: AttackNature,
     public readonly basePower: number,
     public readonly precision: number,
+    public readonly criticalCoefficient: number,
   ) {}
 }

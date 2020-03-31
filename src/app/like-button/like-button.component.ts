@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {Component, Input, OnInit, Output} from '@angular/core';
 
 @Component({
   selector: 'app-like-button',
@@ -7,8 +7,11 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class LikeButtonComponent implements OnInit {
   @Input() nbLikes!: number;
-
   ngOnInit(): void {
     this.nbLikes = 0;
+  }
+
+  handleLike() {
+    this.nbLikes++;
   }
 }

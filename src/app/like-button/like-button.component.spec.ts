@@ -33,4 +33,18 @@ describe('LikeButtonComponent', () => {
     fixture.detectChanges();
     expect(view.textContent).toContain('8 Likes');
   });
+
+  it('Should display 1 Like after clicking on the button', ()=>{
+    view.querySelector('button').click();
+    fixture.detectChanges();
+    expect(view.textContent).toContain('1 Like');
+  })
+
+  it('Should display 2 Like after clicking 2 times on the button', ()=>{
+    view.querySelector('button').click();
+    view.querySelector('button').click();
+    fixture.detectChanges();
+    expect(view.textContent).toContain('2 Like');
+  })
+
 });

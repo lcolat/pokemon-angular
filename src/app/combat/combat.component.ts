@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, Output } from '@angular/core';
 import { Pokemon, PokemonType } from '../logic/Pokemon';
-import { Combat } from '../logic/Combat';
+import {Combat, CombatState} from '../logic/Combat';
 import { givenPokemon } from '../logic/utils';
 
 @Component({
@@ -25,7 +25,16 @@ export class CombatComponent implements OnInit {
       speed: 90,
     });
 
-    this.secondPokemon = givenPokemon();
+    this.secondPokemon = givenPokemon({
+      name: 'Salamèche',
+      type: PokemonType.FIRE,
+      hp: 39,
+      level: 1,
+      attack: 52,
+      defense: 43,
+      speed: 65,
+    });
+
     this.combat = new Combat(this.firstPokemon, this.secondPokemon);
 
     this.combat.subscribe((log: string) => {
@@ -34,6 +43,14 @@ export class CombatComponent implements OnInit {
   }
 
   async start(): Promise<void> {
+    var btn = <HTMLInputElement> document.getElementById('startButton');
+    btn.disabled = true;
+    btn = <HTMLInputElement> document.getElementById('pauseButton');
+    btn.hidden = false;
     await this.combat.start(1000);
+  }
+
+  handlePlay(combatState:CombatState):void {
+    this.combat.state = combatState;
   }
 }
