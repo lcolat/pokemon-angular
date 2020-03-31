@@ -24,8 +24,8 @@ describe('PlayButtonComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display Play by default', () => {
-    expect(view.textContent).toContain('Play');
+  it('should display Pause by default', () => {
+    expect(view.textContent).toContain('Pause');
   });
 
   it('should display Play when isPlaying false', () => {
@@ -40,9 +40,9 @@ describe('PlayButtonComponent', () => {
     expect(view.textContent).toContain('Pause');
   });
 
-  it('should display Pause when click', () => {
+  it('should display Play when click first time', () => {
     view.querySelector('button').click();
     fixture.detectChanges();
-    expect(view.textContent).toContain('Pause');
+    expect(view.textContent).toContain('Play');
   });
 });
