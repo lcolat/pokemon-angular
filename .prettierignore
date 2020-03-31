@@ -1,0 +1,7 @@
+dist
+*.json
+coverage
+migrations
+temp
+src/coverage
+

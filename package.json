@@ -6,7 +6,13 @@
     "start": "ng serve",
     "build": "ng build",
     "test": "ng test",
-    "lint": "ng lint",
+    "lint": "npm run prettier:check && npm run eslint",
+    "lint:fix": "npm run eslint:fix && npm run prettier:fix",
+    "prettier:cli": "prettier \"**/*.ts\" \"**/*.js\"",
+    "prettier:check": "npm run prettier:cli -- -l",
+    "prettier:fix": "npm run prettier:cli -- --write",
+    "eslint": "eslint --ext .ts,.js --report-unused-disable-directives .",
+    "eslint:fix": "npm run eslint -- --fix",
     "e2e": "ng e2e"
   },
   "private": true,
@@ -21,6 +27,7 @@
     "@angular/router": "~9.1.0",
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
+    "uuid": "^7.0.2",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
@@ -33,13 +40,20 @@
     "@types/jasminewd2": "~2.0.3",
     "@types/jest": "^25.1.4",
     "@types/node": "^12.11.1",
+    "@types/uuid": "^7.0.2",
+    "@typescript-eslint/eslint-plugin": "^2.26.0",
+    "@typescript-eslint/parser": "^2.26.0",
     "codelyzer": "^5.1.2",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-eslint-plugin": "^2.2.1",
+    "eslint-plugin-prettier": "^3.1.2",
     "jasmine-core": "~3.5.0",
     "jasmine-spec-reporter": "~4.2.1",
     "jest": "^25.2.4",
+    "prettier": "^2.0.2",
     "protractor": "~5.4.3",
     "ts-node": "~8.3.0",
-    "tslint": "~6.1.0",
     "typescript": "~3.8.3"
   }
 }
