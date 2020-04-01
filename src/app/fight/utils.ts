@@ -1,5 +1,5 @@
-import { Pokemon, PokemonType } from './Pokemon';
-import { Attack, AttackNature } from './Attack';
+import { Pokemon, PokemonType } from './models/Pokemon';
+import { Attack, AttackNature } from './models/Attack';
 import * as uuid from 'uuid';
 
 export interface PokemonData {
@@ -32,4 +32,8 @@ export function givenPokemon(data?: PokemonData): Pokemon {
       },
     ],
   );
+}
+
+export function randomIndex(collectionLength: number): number {
+  return Math.floor(Math.random() * collectionLength);
 }

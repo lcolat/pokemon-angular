@@ -1,5 +1,5 @@
 import { Directive, ElementRef, Input, OnInit, Renderer2 } from '@angular/core';
-import { LogType } from '../logic/Combat';
+import { LogType } from '../fight/fight.service';
 
 @Directive({
   selector: '[logColor]',
@@ -13,15 +13,10 @@ export class LogColorDirective implements OnInit {
     let color: string;
 
     switch (this.logType) {
-      case 'dead':
-        color = 'red';
+      case 'end':
+        color = 'green';
         break;
-      case 'attack':
-      case 'critical':
       case 'damage':
-      case 'hp':
-      case 'newRound':
-      case 'win':
       default:
         color = 'black';
     }

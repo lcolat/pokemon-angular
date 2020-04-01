@@ -1,4 +1,5 @@
 import { Attack } from './Attack';
+import { randomIndex } from '../utils';
 
 export enum PokemonType {
   WATER = 'WATER',
@@ -18,10 +19,18 @@ export class Pokemon {
     public readonly defense: number,
     public readonly speed: number,
     public readonly attacks: Attack[],
+    public readonly color?: string,
   ) {
     if (this.attacks.length === 0) {
       throw new Error('No attacks defined');
     }
+
+    this.color = color ?? this.generateRandomColor();
+  }
+
+  private generateRandomColor(): string {
+    const colors = ['red', 'green', 'yellow', 'orange'];
+    return colors[randomIndex(colors.length)];
   }
 
   public removeHp(damage: number): void {
@@ -33,6 +42,6 @@ export class Pokemon {
   }
 
   public getRandomAttack(): Attack {
-    return this.attacks[Math.floor(Math.random() * this.attacks.length)];
+    return this.attacks[randomIndex(this.attacks.length)];
   }
 }

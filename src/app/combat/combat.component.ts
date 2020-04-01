@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, Output } from '@angular/core';
-import { Pokemon, PokemonType } from '../logic/Pokemon';
-import { Combat, CombatState } from '../logic/Combat';
-import { givenPokemon } from '../logic/utils';
+import { Pokemon, PokemonType } from '../fight/models/Pokemon';
+import { givenPokemon } from '../fight/utils';
+import { FightState, FightService, Log } from '../fight/fight.service';
 
 @Component({
   selector: 'combat-component',
@@ -11,8 +11,9 @@ import { givenPokemon } from '../logic/utils';
 export class CombatComponent implements OnInit {
   @Input() firstPokemon!: Pokemon;
   @Input() secondPokemon!: Pokemon;
-  @Output() combat!: Combat;
-  @Output() logs: string[] = [];
+  @Output() logs: Log[] = [];
+
+  constructor(public fightService: FightService) {}
 
   ngOnInit(): void {
     this.firstPokemon = givenPokemon({
@@ -35,22 +36,29 @@ export class CombatComponent implements OnInit {
       speed: 65,
     });
 
-    this.combat = new Combat(this.firstPokemon, this.secondPokemon);
-
-    this.combat.subscribe((log: string) => {
+    this.fightService.subscribe((log: Log) => {
       this.logs.push(log);
     });
   }
 
   async start(): Promise<void> {
-    var btn = <HTMLInputElement>document.getElementById('startButton');
-    btn.disabled = true;
-    btn = <HTMLInputElement>document.getElementById('pauseButton');
-    btn.hidden = false;
-    await this.combat.start(1000);
+    const startButton = document.getElementById(
+      'startButton',
+    ) as HTMLInputElement;
+
+    startButton.disabled = true;
+
+    const pauseButton = document.getElementById(
+      'pauseButton',
+    ) as HTMLInputElement;
+
+    pauseButton.hidden = false;
+
+    this.fightService.init(this.firstPokemon, this.secondPokemon);
+    await this.fightService.start(1000);
   }
 
-  handlePlay(combatState: CombatState): void {
-    this.combat.state = combatState;
+  handlePlay(fightState: FightState): void {
+    this.fightService.state = fightState;
   }
 }

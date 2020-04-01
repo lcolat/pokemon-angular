@@ -1,0 +1,27 @@
+.attackName {
+  font-weight: bold;
+}
+
+.winnerName {
+  font-weight: bold;
+}
+
+.battle-screen {
+  background-image: url("src/assets/battle-screen-background.png");
+  background-repeat: no-repeat;
+  width: 512px;
+  height: 288px;
+}
+
+.attacker {
+  position: absolute;
+  left: 85px;
+  top: 225px;
+}
+
+.defender {
+  position: absolute;
+  left: 330px;
+  top: 195px;
+}
+

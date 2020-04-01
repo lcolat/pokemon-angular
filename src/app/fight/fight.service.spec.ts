@@ -1,9 +1,21 @@
-import { Combat, CombatState } from './Combat';
+import { TestBed } from '@angular/core/testing';
+import { FightService, FightState } from './fight.service';
 import { givenPokemon } from './utils';
-import { Attack, AttackNature } from './Attack';
-import { PokemonType } from './Pokemon';
+import { Attack, AttackNature } from './models/Attack';
+import { PokemonType } from './models/Pokemon';
 
-describe('Combat', () => {
+describe('FightService', () => {
+  let service: FightService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(FightService);
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+
   it('should determine the attackers which has the most speed (1)', () => {
     const firstPokemon = givenPokemon({
       speed: 10,
@@ -13,9 +25,9 @@ describe('Combat', () => {
       speed: 15,
     });
 
-    expect(new Combat(firstPokemon, secondPokemon).attacker).toBe(
-      secondPokemon,
-    );
+    const fs = new FightService();
+    fs.init(firstPokemon, secondPokemon);
+    expect(fs.attacker).toBe(secondPokemon);
   });
 
   it('should determine the attackers which has the most speed (2)', () => {
@@ -27,7 +39,9 @@ describe('Combat', () => {
       speed: 10,
     });
 
-    expect(new Combat(firstPokemon, secondPokemon).attacker).toBe(firstPokemon);
+    const fs = new FightService();
+    fs.init(firstPokemon, secondPokemon);
+    expect(fs.attacker).toBe(firstPokemon);
   });
 
   it('should determine the attackers randomly when the speed is the same (1)', () => {
@@ -41,9 +55,9 @@ describe('Combat', () => {
 
     const randomFn = (): number => 0.3;
 
-    expect(new Combat(firstPokemon, secondPokemon, randomFn).attacker).toBe(
-      secondPokemon,
-    );
+    const fs = new FightService();
+    fs.init(firstPokemon, secondPokemon, randomFn);
+    expect(fs.attacker).toBe(secondPokemon);
   });
 
   it('should determine the attackers randomly when the speed is the same (2)', () => {
@@ -57,9 +71,9 @@ describe('Combat', () => {
 
     const randomFn = (): number => 0.7;
 
-    expect(new Combat(firstPokemon, secondPokemon, randomFn).attacker).toBe(
-      firstPokemon,
-    );
+    const fs = new FightService();
+    fs.init(firstPokemon, secondPokemon, randomFn);
+    expect(fs.attacker).toBe(firstPokemon);
   });
 
   it('should not allow unknown attacks', () => {
@@ -77,8 +91,9 @@ describe('Combat', () => {
 
     const secondPokemon = givenPokemon();
 
-    const combat = new Combat(firstPokemon, secondPokemon);
-    expect(() => combat.attack({} as Attack)).toThrow('Invalid attack');
+    const fs = new FightService();
+    fs.init(firstPokemon, secondPokemon);
+    expect(() => fs.attack({} as Attack)).toThrow('Invalid attack');
   });
 
   it('should remove correct amount of hp of the defender', () => {
@@ -100,11 +115,12 @@ describe('Combat', () => {
       defense: 10,
     });
 
-    const combat = new Combat(firstPokemon, secondPokemon);
-    combat.attacker = firstPokemon;
-    combat.defender = secondPokemon;
+    const fs = new FightService();
+    fs.init(firstPokemon, secondPokemon);
+    fs.attacker = firstPokemon;
+    fs.defender = secondPokemon;
 
-    combat.attack(firstPokemonAttack);
+    fs.attack(firstPokemonAttack);
     expect(secondPokemon.hp).toEqual(96);
   });
 
@@ -127,25 +143,29 @@ describe('Combat', () => {
       defense: 10,
     });
 
-    const combat = new Combat(firstPokemon, secondPokemon);
-    combat.attacker = firstPokemon;
-    combat.defender = secondPokemon;
+    const fs = new FightService();
+    fs.init(firstPokemon, secondPokemon);
+    fs.attacker = firstPokemon;
+    fs.defender = secondPokemon;
 
-    combat.attack(firstPokemonAttack, () => 0.95);
+    fs.attack(firstPokemonAttack, () => 0.95);
     expect(secondPokemon.hp).toEqual(92);
   });
 
   it('should switch pokemons at the end of an attack', () => {
-    const combat = new Combat(givenPokemon(), givenPokemon());
-    const { attacker, defender } = combat;
+    const fs = new FightService();
+    fs.init(givenPokemon(), givenPokemon());
+    const { attacker, defender } = fs;
 
-    combat.attack(combat.attacker.attacks[0]);
-    expect(combat.attacker).toBe(defender);
-    expect(combat.defender).toBe(attacker);
+    fs.attack(fs.attacker.attacks[0]);
+    expect(fs.attacker).toBe(defender);
+    expect(fs.defender).toBe(attacker);
   });
 
-  it('should start a combat and return the winner (1)', async () => {
-    const combat = new Combat(
+  it('should start a FightService and return the winner (1)', async () => {
+    const fs = new FightService();
+
+    fs.init(
       givenPokemon({
         defense: 100,
         attack: 100,
@@ -184,12 +204,14 @@ describe('Combat', () => {
       }),
     );
 
-    const winner = await combat.start(10);
-    expect(winner).toBe(combat.secondPokemon);
+    const winner = await fs.start(10);
+    expect(winner).toBe(fs.secondPokemon);
   });
 
-  it('should start a combat and return the winner (2)', async () => {
-    const combat = new Combat(
+  it('should start a FightService and return the winner (2)', async () => {
+    const fs = new FightService();
+
+    fs.init(
       givenPokemon({
         defense: 100,
         attack: 100,
@@ -228,28 +250,38 @@ describe('Combat', () => {
       }),
     );
 
-    const winner = await combat.start(10);
-    expect(winner).toBe(combat.firstPokemon);
+    const winner = await fs.start(10);
+    expect(winner).toBe(fs.firstPokemon);
   });
 
-  it('should not start twice a combat', () => {
-    const combat = new Combat(givenPokemon(), givenPokemon());
-    combat.start(500);
-
-    return expect(() => combat.start(500)).toThrow('Game already started');
+  it('should not start twice a FightService', () => {
+    const fs = new FightService();
+    fs.init(givenPokemon(), givenPokemon());
+    fs.start(500);
+    return expect(() => fs.start(500)).toThrow('Game already started');
   });
 
   it('should invert state when the state is RUNNING', () => {
-    const combat = new Combat(givenPokemon(), givenPokemon());
-    combat.state = CombatState.RUNNING;
-    combat.invertState();
-    expect(combat.state).toEqual(CombatState.PAUSE);
+    const fs = new FightService();
+    fs.init(givenPokemon(), givenPokemon());
+    fs.state = FightState.RUNNING;
+    fs.invertPauseState();
+    expect(fs.state).toEqual(FightState.PAUSE);
   });
 
   it('should invert state when the state is PAUSE', () => {
-    const combat = new Combat(givenPokemon(), givenPokemon());
-    combat.state = CombatState.PAUSE;
-    combat.invertState();
-    expect(combat.state).toEqual(CombatState.RUNNING);
+    const fs = new FightService();
+    fs.init(givenPokemon(), givenPokemon());
+    fs.state = FightState.PAUSE;
+    fs.invertPauseState();
+    expect(fs.state).toEqual(FightState.RUNNING);
+  });
+
+  it('should not invert state when the state is not PAUSE or RUNNING', () => {
+    const fs = new FightService();
+    fs.init(givenPokemon(), givenPokemon());
+    fs.state = FightState.STARTING;
+    fs.invertPauseState();
+    expect(fs.state).toEqual(FightState.STARTING);
   });
 });

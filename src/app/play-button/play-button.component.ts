@@ -1,5 +1,5 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {CombatState} from "../logic/Combat";
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FightState } from '../fight/fight.service';
 
 @Component({
   selector: 'app-play-button',
@@ -8,15 +8,20 @@ import {CombatState} from "../logic/Combat";
 })
 export class PlayButtonComponent implements OnInit {
   isPlaying!: boolean;
-  @Input('combatState') combatState = CombatState.PAUSE;
-  @Output() onClick = new EventEmitter<CombatState>();
+  @Input('fightState') fightState = FightState.PAUSE;
+  @Output() onClick = new EventEmitter<FightState>();
 
   ngOnInit(): void {
-    this.isPlaying = this.combatState !== CombatState.RUNNING;
+    this.isPlaying = this.fightState !== FightState.RUNNING;
   }
 
   handleClick(): void {
     this.isPlaying = !this.isPlaying;
-    this.onClick.emit(this.combatState === CombatState.PAUSE ? CombatState.RUNNING : CombatState.PAUSE);
+
+    this.onClick.emit(
+      this.fightState === FightState.PAUSE
+        ? FightState.RUNNING
+        : FightState.PAUSE,
+    );
   }
 }

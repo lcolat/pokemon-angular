@@ -1,4 +1,4 @@
-import { givenPokemon } from './utils';
+import { givenPokemon } from '../utils';
 import { AttackNature } from './Attack';
 
 describe('Pokemon', () => {
