@@ -43,6 +43,7 @@ export class FightService extends EventEmitter<Log> {
   public attacker!: Pokemon;
   public defender!: Pokemon;
   public state: FightState = FightState.PAUSE;
+  public startDate: Date | undefined;
   private itvId: number | undefined;
 
   constructor() {
@@ -158,6 +159,7 @@ export class FightService extends EventEmitter<Log> {
       throw new Error('Game already started');
     }
 
+    this.startDate = new Date();
     this.state = FightState.RUNNING;
 
     return new Promise((resolve, reject) => {

@@ -8,6 +8,7 @@ import { PlayButtonComponent } from './play-button/play-button.component';
 import { LogColorDirective } from './combat/log-color.directive';
 import { PokemonComponent } from './pokemon/pokemon.component';
 import { PokemonLogColorDirective } from './combat/pokemon-log-color.directive';
+import { CustomDatePipePipe } from './pipes/custom-date-pipe.pipe';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { PokemonLogColorDirective } from './combat/pokemon-log-color.directive';
     LogColorDirective,
     PokemonComponent,
     PokemonLogColorDirective,
+    CustomDatePipePipe,
   ],
   imports: [BrowserModule],
   providers: [],

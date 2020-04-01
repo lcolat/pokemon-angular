@@ -5,6 +5,10 @@
   <button (click)="start()" id="startButton">Start combat</button>
   <app-play-button [fightState]="fightService.state" (onClick)="handlePlay($event)" id="pauseButton" hidden="true"></app-play-button>
 
+  <div *ngIf="fightService.startDate">
+    <p>Start date : {{ fightService.startDate | customDatePipe }}</p>
+  </div>
+
   <div [className]="'battle-screen'">
     <app-pokemon [pokemon]="firstPokemon" [isAttacker]="true" class="attacker"></app-pokemon>
     <app-pokemon [pokemon]="secondPokemon" [isAttacker]="false" class="defender"></app-pokemon>
@@ -14,7 +18,7 @@
     <div *ngFor="let log of logs" [logColor]="log.type" [ngSwitch]="log.type">
       <div *ngSwitchCase="'damage'" [pokemonLogColor]="[log.attacker, log.defender]">
         <p><span class="attackerName">{{ log.attacker.name }}</span> attack <span *ngIf="log.isCritical">critically </span><span class="defenderName">{{ log.defender.name }}</span> with <span class="attackName">{{ log.attack.name }}</span></p>
-        <p><span class="defenderName">{{ log.defender.name }}</span> lost <span>{{ log.damage }}</span>HP</p>
+        <p><span class="defenderName">{{ log.defender.name }}</span> lost <span>{{ log.damage | number:'2.4' }}</span>HP</p>
       </div>
 
       <div *ngSwitchCase="'end'">
