@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 import { LikeButtonComponent } from './like-button/like-button.component';
 import { CombatComponent } from './combat/combat.component';
 import { PlayButtonComponent } from './play-button/play-button.component';
+import { LogColorDirective } from './combat/log-color.directive';
 
 @NgModule({
   declarations: [
@@ -12,6 +13,7 @@ import { PlayButtonComponent } from './play-button/play-button.component';
     LikeButtonComponent,
     CombatComponent,
     PlayButtonComponent,
+    LogColorDirective,
   ],
   imports: [BrowserModule],
   providers: [],

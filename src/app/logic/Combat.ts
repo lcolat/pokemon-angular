@@ -9,7 +9,21 @@ export enum CombatState {
   PAUSE = 'PAUSE',
 }
 
-export class Combat extends EventEmitter<string> {
+export type LogType =
+  | 'critical'
+  | 'damage'
+  | 'hp'
+  | 'dead'
+  | 'win'
+  | 'newRound'
+  | 'attack';
+
+export interface Log {
+  type: LogType;
+  data: string;
+}
+
+export class Combat extends EventEmitter<Log> {
   public attacker: Pokemon;
   public defender: Pokemon;
   public state: CombatState = CombatState.PAUSE;
@@ -51,7 +65,11 @@ export class Combat extends EventEmitter<string> {
     const isCritical = crititalRandomFn() > 0.8;
 
     if (isCritical) {
-      this.emit(`The attack is critical (x${attack.criticalCoefficient})!`);
+      this.emit({
+        type: 'critical',
+        data: `The attack is critical (x${attack.criticalCoefficient})!`,
+      });
+
       offensiveStat *= attack.criticalCoefficient;
     }
 
@@ -74,14 +92,31 @@ export class Combat extends EventEmitter<string> {
 
     const damageDealt = this.getAttackDamage(attack, crititalRandomFn);
     this.defender.removeHp(damageDealt);
-    this.emit(`${attack.name} caused ${damageDealt} damage`);
-    this.emit(`${this.defender.name} have ${this.defender.hp}HP`);
+
+    this.emit({
+      type: 'damage',
+      data: `${attack.name} caused ${damageDealt} damage`,
+    });
+
+    this.emit({
+      type: 'hp',
+      data: `${this.defender.name} have ${this.defender.hp}HP`,
+    });
+
     this.switchPokemons();
   }
 
   private end(winner: Pokemon, looser: Pokemon): Pokemon {
-    this.emit(`${looser.name} is dead`);
-    this.emit(`${winner.name} won`);
+    this.emit({
+      type: 'dead',
+      data: `${looser.name} is dead`,
+    });
+
+    this.emit({
+      type: 'win',
+      data: `${winner.name} won`,
+    });
+
     clearInterval(this.itvId);
     this.itvId = undefined;
     return winner;
@@ -108,13 +143,17 @@ export class Combat extends EventEmitter<string> {
             return;
           }
 
-          this.emit('New round');
+          this.emit({
+            type: 'newRound',
+            data: 'New round',
+          });
 
           const attack = this.attacker.getRandomAttack();
 
-          this.emit(
-            `${this.attacker.name} will attack ${this.defender.name} with ${attack?.name}`,
-          );
+          this.emit({
+            type: 'attack',
+            data: `${this.attacker.name} will attack ${this.defender.name} with ${attack?.name}`,
+          });
 
           this.attack(attack);
 

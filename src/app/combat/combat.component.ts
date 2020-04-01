@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, Output } from '@angular/core';
 import { Pokemon, PokemonType } from '../logic/Pokemon';
-import {Combat, CombatState} from '../logic/Combat';
+import { Combat, CombatState } from '../logic/Combat';
 import { givenPokemon } from '../logic/utils';
 
 @Component({
@@ -43,14 +43,14 @@ export class CombatComponent implements OnInit {
   }
 
   async start(): Promise<void> {
-    var btn = <HTMLInputElement> document.getElementById('startButton');
+    var btn = <HTMLInputElement>document.getElementById('startButton');
     btn.disabled = true;
-    btn = <HTMLInputElement> document.getElementById('pauseButton');
+    btn = <HTMLInputElement>document.getElementById('pauseButton');
     btn.hidden = false;
     await this.combat.start(1000);
   }
 
-  handlePlay(combatState:CombatState):void {
+  handlePlay(combatState: CombatState): void {
     this.combat.state = combatState;
   }
 }
