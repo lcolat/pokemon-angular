@@ -2,7 +2,7 @@ import { Component, Input, OnInit, Output } from '@angular/core';
 import { Pokemon, PokemonType } from '../fight/models/Pokemon';
 import { givenPokemon } from '../fight/utils';
 import { FightState, FightService, Log } from '../fight/fight.service';
-import {Observable} from "rxjs";
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'combat-component',
@@ -13,7 +13,7 @@ export class CombatComponent implements OnInit {
   @Input() firstPokemon!: Pokemon;
   @Input() secondPokemon!: Pokemon;
   @Output() logs: Log[] = [];
-  source!: Observable<Pokemon>;
+  source!: Observable<Pokemon | undefined>;
 
   constructor(public fightService: FightService) {}
 
@@ -41,8 +41,6 @@ export class CombatComponent implements OnInit {
     this.fightService.subscribe((log: Log) => {
       this.logs.push(log);
     });
-
-    this.source = this.fightService.startObservable(1000);
   }
 
   async start(): Promise<void> {
@@ -59,8 +57,11 @@ export class CombatComponent implements OnInit {
     pauseButton.hidden = false;
 
     this.fightService.init(this.firstPokemon, this.secondPokemon);
-    // await this.fightService.start(1000);
-    this.source.subscribe();
+    this.source = this.fightService.start(200);
+
+    this.source.subscribe((winner) => {
+      console.log('WINNER', winner);
+    });
   }
 
   handlePlay(fightState: FightState): void {

@@ -3,6 +3,7 @@ import { FightService, FightState } from './fight.service';
 import { givenPokemon } from './utils';
 import { Attack, AttackNature } from './models/Attack';
 import { PokemonType } from './models/Pokemon';
+import { take } from 'rxjs/operators';
 
 describe('FightService', () => {
   let service: FightService;
@@ -204,7 +205,7 @@ describe('FightService', () => {
       }),
     );
 
-    const winner = await fs.start(10);
+    const winner = await fs.start(10).pipe(take(1)).toPromise();
     expect(winner).toBe(fs.secondPokemon);
   });
 
@@ -250,7 +251,7 @@ describe('FightService', () => {
       }),
     );
 
-    const winner = await fs.start(10);
+    const winner = await fs.start(10).pipe(take(1)).toPromise();
     expect(winner).toBe(fs.firstPokemon);
   });
 

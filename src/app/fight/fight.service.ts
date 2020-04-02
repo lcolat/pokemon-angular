@@ -1,7 +1,8 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { Pokemon } from './models/Pokemon';
 import { Attack } from './models/Attack';
-import { interval, Observable, Subscription } from "rxjs";
+import { interval, Observable, Subscription } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 
 export type RandomFn = () => number;
 
@@ -159,7 +160,7 @@ export class FightService extends EventEmitter<Log> {
         : this.firstPokemon;
   }
 
-  start(roundInMs = 500): Promise<Pokemon> {
+  start(roundInMs = 500): Observable<Pokemon> {
     if (this.state !== FightState.STARTING) {
       throw new Error('Game already started');
     }
@@ -167,40 +168,9 @@ export class FightService extends EventEmitter<Log> {
     this.startDate = new Date();
     this.state = FightState.RUNNING;
 
-    return new Promise((resolve, reject) => {
-      this.subscription = interval(roundInMs).subscribe(() => {
-        try {
-          if (this.state !== FightState.RUNNING) {
-            return;
-          }
-
-          this.attack(this.attacker.getRandomAttack());
-
-          if (this.firstPokemon.isDead()) {
-            return resolve(this.end(this.secondPokemon, this.firstPokemon));
-          }
-
-          if (this.secondPokemon.isDead()) {
-            return resolve(this.end(this.firstPokemon, this.secondPokemon));
-          }
-        } catch (err) {
-          reject(err);
-        }
-      });
-    });
-  }
-
-  startObservable(roundInMs = 500): Observable<Pokemon> {
-    if (this.state !== FightState.STARTING) {
-      throw new Error('Game already started');
-    }
-
-    this.startDate = new Date();
-    this.state = FightState.RUNNING;
-
-    return new Observable((observer) => {
-      this.itvId = setInterval(() => {
-        try {
+    return interval(roundInMs)
+      .pipe(
+        map(() => {
           if (this.state !== FightState.RUNNING) {
             return;
           }
@@ -210,21 +180,14 @@ export class FightService extends EventEmitter<Log> {
           this.attack(attack);
 
           if (this.firstPokemon.isDead()) {
-            observer.next(this.end(this.secondPokemon, this.firstPokemon));
+            return this.end(this.secondPokemon, this.firstPokemon);
           }
 
           if (this.secondPokemon.isDead()) {
-            observer.next(this.end(this.firstPokemon, this.secondPokemon));
+            return this.end(this.firstPokemon, this.secondPokemon);
           }
-        } catch (err) {
-          clearInterval(this.itvId);
-          throw new Error(err);
-        }
-      }, roundInMs);
-      return () => {
-        observer.complete();
-        clearInterval(this.itvId);
-      };
-    });
+        }),
+      )
+      .pipe(filter((v) => !!v)) as Observable<Pokemon>;
   }
 }
