@@ -1,6 +1,7 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { Pokemon } from './models/Pokemon';
 import { Attack } from './models/Attack';
+import { interval, Observable, Subscription } from "rxjs";
 
 export type RandomFn = () => number;
 
@@ -44,6 +45,8 @@ export class FightService extends EventEmitter<Log> {
   public defender!: Pokemon;
   public state: FightState = FightState.PAUSE;
   public startDate: Date | undefined;
+  public endDate: Date | undefined;
+  private subscription: Subscription | undefined;
   private itvId: number | undefined;
 
   constructor() {
@@ -128,8 +131,10 @@ export class FightService extends EventEmitter<Log> {
       looser: looser,
     });
 
+    this.subscription?.unsubscribe();
     clearInterval(this.itvId);
     this.state = FightState.ENDED;
+    this.endDate = new Date();
     return winner;
   }
 
@@ -163,6 +168,37 @@ export class FightService extends EventEmitter<Log> {
     this.state = FightState.RUNNING;
 
     return new Promise((resolve, reject) => {
+      this.subscription = interval(roundInMs).subscribe(() => {
+        try {
+          if (this.state !== FightState.RUNNING) {
+            return;
+          }
+
+          this.attack(this.attacker.getRandomAttack());
+
+          if (this.firstPokemon.isDead()) {
+            return resolve(this.end(this.secondPokemon, this.firstPokemon));
+          }
+
+          if (this.secondPokemon.isDead()) {
+            return resolve(this.end(this.firstPokemon, this.secondPokemon));
+          }
+        } catch (err) {
+          reject(err);
+        }
+      });
+    });
+  }
+
+  startObservable(roundInMs = 500): Observable<Pokemon> {
+    if (this.state !== FightState.STARTING) {
+      throw new Error('Game already started');
+    }
+
+    this.startDate = new Date();
+    this.state = FightState.RUNNING;
+
+    return new Observable((observer) => {
       this.itvId = setInterval(() => {
         try {
           if (this.state !== FightState.RUNNING) {
@@ -174,17 +210,21 @@ export class FightService extends EventEmitter<Log> {
           this.attack(attack);
 
           if (this.firstPokemon.isDead()) {
-            return resolve(this.end(this.secondPokemon, this.firstPokemon));
+            observer.next(this.end(this.secondPokemon, this.firstPokemon));
           }
 
           if (this.secondPokemon.isDead()) {
-            return resolve(this.end(this.firstPokemon, this.secondPokemon));
+            observer.next(this.end(this.firstPokemon, this.secondPokemon));
           }
         } catch (err) {
           clearInterval(this.itvId);
-          reject(err);
+          throw new Error(err);
         }
       }, roundInMs);
+      return () => {
+        observer.complete();
+        clearInterval(this.itvId);
+      };
     });
   }
 }

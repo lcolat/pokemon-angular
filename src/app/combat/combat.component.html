@@ -10,15 +10,13 @@
     <app-pokemon [pokemon]="secondPokemon" [isAttacker]="false" class="defender"></app-pokemon>
   </div>
 
-  <div>
-    <div *ngIf="fightService.startDate">
-      <p>Start date : {{ fightService.startDate | customDatePipe }}</p>
-    </div>
+  <p *ngIf="fightService.startDate">Start date : {{ fightService.startDate | customDatePipe }}</p>
+  <p *ngIf="fightService.endDate">End date : {{ fightService.endDate | customDatePipe }}</p>
 
-    <div *ngFor="let log of logs" [logColor]="log.type" [ngSwitch]="log.type">
+  <div class="logs">
+    <div *ngFor="let log of logs.slice().reverse()" [logColor]="log.type" [ngSwitch]="log.type">
       <div *ngSwitchCase="'damage'" [pokemonLogColor]="[log.attacker, log.defender]">
-        <p><span class="attackerName">{{ log.attacker.name }}</span> attack <span *ngIf="log.isCritical">critically </span><span class="defenderName">{{ log.defender.name }}</span> with <span class="attackName">{{ log.attack.name }}</span></p>
-        <p><span class="defenderName">{{ log.defender.name }}</span> lost <span>{{ log.damage | number:'2.4' }}</span>HP</p>
+        <p><span class="attackerName">{{ log.attacker.name }}</span> attack <span *ngIf="log.isCritical">critically </span><span class="defenderName">{{ log.defender.name }}</span> with <span class="attackName">{{ log.attack.name }}</span> and loose <span>{{ log.damage | number:'2.2' }}</span>HP</p>
       </div>
 
       <div *ngSwitchCase="'end'">

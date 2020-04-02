@@ -25,3 +25,10 @@
   top: 195px;
 }
 
+.logs {
+  height: 10vh;
+  width: 512px;
+  border: #000066;
+  overflow: auto;
+}
+
