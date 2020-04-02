@@ -12,6 +12,7 @@
 
   <p *ngIf="fightService.startDate">Start date : {{ fightService.startDate | customDatePipe }}</p>
   <p *ngIf="fightService.endDate">End date : {{ fightService.endDate | customDatePipe }}</p>
+  <p *ngIf="winner">Winner is : {{ winner.name }}</p>
 
   <div class="logs">
     <div *ngFor="let log of logs.slice().reverse()" [logColor]="log.type" [ngSwitch]="log.type">

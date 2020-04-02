@@ -13,6 +13,7 @@ export class CombatComponent implements OnInit {
   @Input() firstPokemon!: Pokemon;
   @Input() secondPokemon!: Pokemon;
   @Output() logs: Log[] = [];
+  @Output() winner?: Pokemon;
   source!: Observable<Pokemon | undefined>;
 
   constructor(public fightService: FightService) {}
@@ -59,8 +60,9 @@ export class CombatComponent implements OnInit {
     this.fightService.init(this.firstPokemon, this.secondPokemon);
     this.source = this.fightService.start(200);
 
-    this.source.subscribe((winner) => {
-      console.log('WINNER', winner);
+    const subscription = this.source.subscribe((winner) => {
+      this.winner = winner;
+      subscription.unsubscribe();
     });
   }
 
