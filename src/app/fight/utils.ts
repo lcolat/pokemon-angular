@@ -1,4 +1,4 @@
-import { Pokemon, PokemonType } from './models/Pokemon';
+import { Pokemon, PokemonType, Sprites } from './models/Pokemon';
 import { Attack, AttackNature } from './models/Attack';
 import * as uuid from 'uuid';
 
@@ -11,6 +11,7 @@ export interface PokemonData {
   defense?: number;
   speed?: number;
   attacks?: Attack[];
+  sprites?: Sprites;
 }
 
 export function givenPokemon(data?: PokemonData): Pokemon {
@@ -31,6 +32,10 @@ export function givenPokemon(data?: PokemonData): Pokemon {
         criticalCoefficient: 3,
       },
     ],
+    data?.sprites ?? {
+      back: '',
+      front: '',
+    },
   );
 }
 

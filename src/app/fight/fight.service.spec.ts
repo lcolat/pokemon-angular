@@ -57,7 +57,7 @@ describe('FightService', () => {
     const randomFn = (): number => 0.3;
 
     const fs = new FightService();
-    fs.init(firstPokemon, secondPokemon, randomFn);
+    fs.init(firstPokemon, secondPokemon, 10, randomFn);
     expect(fs.attacker).toBe(secondPokemon);
   });
 
@@ -73,7 +73,7 @@ describe('FightService', () => {
     const randomFn = (): number => 0.7;
 
     const fs = new FightService();
-    fs.init(firstPokemon, secondPokemon, randomFn);
+    fs.init(firstPokemon, secondPokemon, 10, randomFn);
     expect(fs.attacker).toBe(firstPokemon);
   });
 
@@ -166,100 +166,109 @@ describe('FightService', () => {
   it('should start a FightService and return the winner (1)', async () => {
     const fs = new FightService();
 
-    fs.init(
-      givenPokemon({
-        defense: 100,
-        attack: 100,
-        hp: 100,
-        speed: 50,
-        type: PokemonType.FIRE,
-        level: 50,
-        name: 'PokemonA',
-        attacks: [
-          {
-            nature: AttackNature.PHYSICAL,
-            name: 'AttackA',
-            basePower: 50,
-            precision: 10,
-            criticalCoefficient: 1,
-          },
-        ],
-      }),
-      givenPokemon({
-        defense: 100,
-        attack: 100,
-        hp: 100,
-        speed: 51,
-        type: PokemonType.FIRE,
-        level: 50,
-        name: 'PokemonB',
-        attacks: [
-          {
-            nature: AttackNature.PHYSICAL,
-            name: 'AttackB',
-            basePower: 50,
-            precision: 10,
-            criticalCoefficient: 1,
-          },
-        ],
-      }),
-    );
+    const winner = await fs
+      .init(
+        givenPokemon({
+          defense: 100,
+          attack: 100,
+          hp: 100,
+          speed: 50,
+          type: PokemonType.FIRE,
+          level: 50,
+          name: 'PokemonA',
+          attacks: [
+            {
+              nature: AttackNature.PHYSICAL,
+              name: 'AttackA',
+              basePower: 50,
+              precision: 10,
+              criticalCoefficient: 1,
+            },
+          ],
+        }),
+        givenPokemon({
+          defense: 100,
+          attack: 100,
+          hp: 100,
+          speed: 51,
+          type: PokemonType.FIRE,
+          level: 50,
+          name: 'PokemonB',
+          attacks: [
+            {
+              nature: AttackNature.PHYSICAL,
+              name: 'AttackB',
+              basePower: 50,
+              precision: 10,
+              criticalCoefficient: 1,
+            },
+          ],
+        }),
+        10,
+      )
+      .pipe(take(1))
+      .toPromise();
 
-    const winner = await fs.start(10).pipe(take(1)).toPromise();
     expect(winner).toBe(fs.secondPokemon);
   });
 
   it('should start a FightService and return the winner (2)', async () => {
     const fs = new FightService();
 
-    fs.init(
-      givenPokemon({
-        defense: 100,
-        attack: 100,
-        hp: 100,
-        speed: 51,
-        type: PokemonType.FIRE,
-        level: 50,
-        name: 'PokemonA',
-        attacks: [
-          {
-            nature: AttackNature.PHYSICAL,
-            name: 'AttackA',
-            basePower: 50,
-            precision: 10,
-            criticalCoefficient: 1,
-          },
-        ],
-      }),
-      givenPokemon({
-        defense: 100,
-        attack: 100,
-        hp: 100,
-        speed: 50,
-        type: PokemonType.FIRE,
-        level: 50,
-        name: 'PokemonB',
-        attacks: [
-          {
-            nature: AttackNature.PHYSICAL,
-            name: 'AttackB',
-            basePower: 50,
-            precision: 10,
-            criticalCoefficient: 1,
-          },
-        ],
-      }),
-    );
+    const winner = await fs
+      .init(
+        givenPokemon({
+          defense: 100,
+          attack: 100,
+          hp: 100,
+          speed: 51,
+          type: PokemonType.FIRE,
+          level: 50,
+          name: 'PokemonA',
+          attacks: [
+            {
+              nature: AttackNature.PHYSICAL,
+              name: 'AttackA',
+              basePower: 50,
+              precision: 10,
+              criticalCoefficient: 1,
+            },
+          ],
+        }),
+        givenPokemon({
+          defense: 100,
+          attack: 100,
+          hp: 100,
+          speed: 50,
+          type: PokemonType.FIRE,
+          level: 50,
+          name: 'PokemonB',
+          attacks: [
+            {
+              nature: AttackNature.PHYSICAL,
+              name: 'AttackB',
+              basePower: 50,
+              precision: 10,
+              criticalCoefficient: 1,
+            },
+          ],
+        }),
+        10,
+      )
+      .pipe(take(1))
+      .toPromise();
 
-    const winner = await fs.start(10).pipe(take(1)).toPromise();
     expect(winner).toBe(fs.firstPokemon);
   });
 
   it('should not start twice a FightService', () => {
     const fs = new FightService();
-    fs.init(givenPokemon(), givenPokemon());
-    fs.start(500);
-    return expect(() => fs.start(500)).toThrow('Game already started');
+
+    fs.init(givenPokemon(), givenPokemon(), 500);
+
+    return expect(() => fs.init(givenPokemon(), givenPokemon(), 500)).toThrow(
+      'Game already started',
+    );
   });
 
   it('should invert state when the state is RUNNING', () => {

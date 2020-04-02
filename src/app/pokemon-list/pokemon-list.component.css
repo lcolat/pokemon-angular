@@ -1,0 +1,13 @@
+.pokemon-list-container {
+  text-align: center;
+}
+
+.pokemon-list-left, .pokemon-list-right {
+  display: inline;
+}
+
+.pokemon-list {
+  width: 35%;
+  display: flex;
+  flex-wrap: wrap;
+}

@@ -1,6 +1,7 @@
 export enum AttackNature {
-  PHYSICAL = 'PHYSICAL',
-  PSYCHIC = 'PSYCHIC',
+  NORMAL = 'normal',
+  PHYSICAL = 'physical',
+  PSYCHIC = 'psychic',
 }
 
 export class Attack {

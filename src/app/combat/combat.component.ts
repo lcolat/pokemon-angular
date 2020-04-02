@@ -14,7 +14,7 @@ export class CombatComponent implements OnInit {
   @Input() secondPokemon!: Pokemon;
   @Output() logs: Log[] = [];
   @Output() winner?: Pokemon;
-  source!: Observable<Pokemon | undefined>;
+  source!: Observable<Log | undefined>;
 
   constructor(public fightService: FightService) {}
 
@@ -38,10 +38,6 @@ export class CombatComponent implements OnInit {
       defense: 43,
       speed: 65,
     });
-
-    this.fightService.subscribe((log: Log) => {
-      this.logs.push(log);
-    });
   }
 
   async start(): Promise<void> {
@@ -57,12 +53,22 @@ export class CombatComponent implements OnInit {
 
     pauseButton.hidden = false;
 
-    this.fightService.init(this.firstPokemon, this.secondPokemon);
-    this.source = this.fightService.start(200);
+    this.source = this.fightService.init(
+      this.firstPokemon,
+      this.secondPokemon,
+      500,
+    );
 
-    const subscription = this.source.subscribe((winner) => {
-      this.winner = winner;
-      subscription.unsubscribe();
+    const subscription = this.source.subscribe((log: Log | undefined) => {
+      if (!log) {
+        return; // when game is paused per example
+      }
+
+      this.logs.push(log);
+
+      if (log.type === 'end') {
+        subscription.unsubscribe();
+      }
     });
   }
 

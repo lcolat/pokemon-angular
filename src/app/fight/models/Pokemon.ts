@@ -1,6 +1,11 @@
 import { Attack } from './Attack';
 import { randomIndex } from '../utils';
 
+export interface Sprites {
+  front: string;
+  back: string;
+}
+
 export enum PokemonType {
   WATER = 'WATER',
   GRASS = 'GRASS',
@@ -19,6 +24,7 @@ export class Pokemon {
     public readonly defense: number,
     public readonly speed: number,
     public readonly attacks: Attack[],
+    public readonly sprites: Sprites,
     public readonly color?: string,
   ) {
     if (this.attacks.length === 0) {

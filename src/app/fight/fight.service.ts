@@ -39,7 +39,7 @@ export type Log = DamageLog | EndLog;
 @Injectable({
   providedIn: 'root',
 })
-export class FightService extends EventEmitter<Log> {
+export class FightService {
   public firstPokemon!: Pokemon;
   public secondPokemon!: Pokemon;
   public attacker!: Pokemon;
@@ -48,10 +48,8 @@ export class FightService extends EventEmitter<Log> {
   public startDate: Date | undefined;
   public endDate: Date | undefined;
   private subscription: Subscription | undefined;
-  private itvId: number | undefined;
 
   constructor() {
-    super();
     this.state = FightState.STARTING;
   }
 
@@ -100,7 +98,7 @@ export class FightService extends EventEmitter<Log> {
     };
   }
 
-  attack(attack: Attack, crititalRandomFn: RandomFn = Math.random): void {
+  attack(attack: Attack, crititalRandomFn: RandomFn = Math.random): DamageLog {
     if (!this.attacker.attacks.includes(attack)) {
       throw new Error('Invalid attack');
     }
@@ -113,30 +111,28 @@ export class FightService extends EventEmitter<Log> {
     const oldDefenderHp = this.defender.hp;
     this.defender.removeHp(damage);
 
-    this.emit({
+    const log: DamageLog = {
       type: 'damage',
       attack,
       damage: oldDefenderHp - this.defender.hp,
       isCritical,
       attacker: this.attacker,
       defender: this.defender,
-    });
+    };
 
     this.switchPokemons();
+    return log;
   }
 
-  private end(winner: Pokemon, looser: Pokemon): Pokemon {
-    this.emit({
+  private end(winner: Pokemon, looser: Pokemon): EndLog {
+    this.state = FightState.ENDED;
+    this.endDate = new Date();
+
+    return {
       type: 'end',
       winner: winner,
       looser: looser,
-    });
-
-    this.subscription?.unsubscribe();
-    clearInterval(this.itvId);
-    this.state = FightState.ENDED;
-    this.endDate = new Date();
-    return winner;
+    };
   }
 
   invertPauseState() {
@@ -148,7 +144,16 @@ export class FightService extends EventEmitter<Log> {
     }
   }
 
-  init(firstPokemon: Pokemon, secondPokemon: Pokemon, randomFn?: RandomFn) {
+  init(
+    firstPokemon: Pokemon,
+    secondPokemon: Pokemon,
+    roundInMs = 500,
+    randomFn?: RandomFn,
+  ): Observable<Log | undefined> {
+    if (this.state !== FightState.STARTING) {
+      throw new Error('Game already started');
+    }
+
     this.firstPokemon = firstPokemon;
     this.secondPokemon = secondPokemon;
 
@@ -158,36 +163,29 @@ export class FightService extends EventEmitter<Log> {
       this.attacker === this.firstPokemon
         ? this.secondPokemon
         : this.firstPokemon;
-  }
-
-  start(roundInMs = 500): Observable<Pokemon> {
-    if (this.state !== FightState.STARTING) {
-      throw new Error('Game already started');
-    }
 
     this.startDate = new Date();
     this.state = FightState.RUNNING;
 
-    return interval(roundInMs)
-      .pipe(
-        map(() => {
-          if (this.state !== FightState.RUNNING) {
-            return;
-          }
+    return interval(roundInMs).pipe(
+      map(() => {
+        if (this.state !== FightState.RUNNING) {
+          return;
+        }
 
-          const attack = this.attacker.getRandomAttack();
+        const attack = this.attacker.getRandomAttack();
+        const damageLog = this.attack(attack);
 
-          this.attack(attack);
+        if (this.firstPokemon.isDead()) {
+          return this.end(this.secondPokemon, this.firstPokemon);
+        }
 
-          if (this.firstPokemon.isDead()) {
-            return this.end(this.secondPokemon, this.firstPokemon);
-          }
+        if (this.secondPokemon.isDead()) {
+          return this.end(this.firstPokemon, this.secondPokemon);
+        }
 
-          if (this.secondPokemon.isDead()) {
-            return this.end(this.firstPokemon, this.secondPokemon);
-          }
-        }),
-      )
-      .pipe(filter((v) => !!v)) as Observable<Pokemon>;
+        return damageLog;
+      }),
+    );
   }
 }

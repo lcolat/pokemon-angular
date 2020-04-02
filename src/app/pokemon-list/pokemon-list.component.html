@@ -1,0 +1,19 @@
+<p>pokemon-list works!</p>
+
+<div class="pokemon-list-container">
+  <div class="pokemon-list-left">
+    <div class="pokemon-list">
+      <div *ngFor="let pokemon of pokemons">
+        <img [attr.src]="pokemon.sprites.front" [attr.alt]="pokemon.name" [attr.title]="pokemon.name"/>
+      </div>
+    </div>
+  </div>
+
+  <div class="pokemon-list-right">
+    <div class="pokemon-list">
+      <div *ngFor="let pokemon of pokemons">
+        <img [attr.src]="pokemon.sprites.front" [attr.alt]="pokemon.name" [attr.title]="pokemon.name"/>
+      </div>
+    </div>
+  </div>
+</div>

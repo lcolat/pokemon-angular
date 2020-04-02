@@ -9,6 +9,8 @@ import { LogColorDirective } from './combat/log-color.directive';
 import { PokemonComponent } from './pokemon/pokemon.component';
 import { PokemonLogColorDirective } from './combat/pokemon-log-color.directive';
 import { CustomDatePipe } from './pipes/custom-date.pipe';
+import {HttpClientModule} from "@angular/common/http";
+import { PokemonListComponent } from './pokemon-list/pokemon-list.component';
 
 @NgModule({
   declarations: [
@@ -20,8 +22,9 @@ import { CustomDatePipe } from './pipes/custom-date.pipe';
     PokemonComponent,
     PokemonLogColorDirective,
     CustomDatePipe,
+    PokemonListComponent,
   ],
-  imports: [BrowserModule],
+  imports: [BrowserModule, HttpClientModule],
   providers: [],
   bootstrap: [AppComponent],
 })
