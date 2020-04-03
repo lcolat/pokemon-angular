@@ -1,34 +1,53 @@
 import { Injectable } from '@angular/core';
 import { Pokemon } from '../fight/models/Pokemon';
 import axios from 'axios';
-import { PokemonMoveAPI, PokemonPokeAPI } from './models/IPokeAPIModels';
+import { PokemonMoveAPI, PokemonPokeAPI } from './models/PokeAPI';
 import { AttackNature } from '../fight/models/Attack';
+import * as localForage from 'localforage';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PokemonService {
-  constructor() {}
+  private async getRawPokemon(name: string): Promise<PokemonPokeAPI> {
+    const pokemonKey = `pokemon:${name}`;
+    const pokemonInCache = await localForage.getItem<PokemonPokeAPI>(
+      pokemonKey,
+    );
 
-  // getPokemons(): Observable<Pokemon[]>{
-  //   return this.http.get<PokemonPokeAPI>('https://pokeapi.co/api/v2/pokemon/').pipe(
-  //     map((raw:IPokemonListPokeAPI): Pokemon[]=>{
-  //       let mappedResult:Pokemon[];
-  //       raw.results.forEach(pokemon => {
-  //         mappedResult.push(new Pokemon(pokemon.name,))
-  //       });
-  //     return mappedResult;
-  //   }))
-  // }
+    if (pokemonInCache) {
+      return pokemonInCache;
+    }
 
-  async getPokemon(name: string): Promise<Pokemon> {
-    const rawPokemon: PokemonPokeAPI = (
+    const pokemon = (
       await axios.get(`https://pokeapi.co/api/v2/pokemon/${name}`)
     ).data;
 
-    const moves: PokemonMoveAPI[] = (
-      await Promise.all(rawPokemon.moves.map((m) => axios.get(m.move.url)))
-    ).map((p) => p.data);
+    await localForage.setItem(pokemonKey, pokemon);
+
+    return pokemon;
+  }
+
+  private getPokemonMoves(pokemon: PokemonPokeAPI): Promise<PokemonMoveAPI[]> {
+    return Promise.all(
+      pokemon.moves.map(async (m) => {
+        const moveKey = `move:${m.move.name}`;
+        const moveInCache = await localForage.getItem<PokemonMoveAPI>(moveKey);
+
+        if (moveInCache) {
+          return moveInCache;
+        }
+
+        const move = (await axios.get(m.move.url)).data;
+        await localForage.setItem(moveKey, move);
+        return move;
+      }),
+    );
+  }
+
+  async getPokemon(name: string): Promise<Pokemon> {
+    const rawPokemon = await this.getRawPokemon(name);
+    const moves = await this.getPokemonMoves(rawPokemon);
 
     return new Pokemon(
       name,

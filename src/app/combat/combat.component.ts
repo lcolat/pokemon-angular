@@ -3,6 +3,8 @@ import { Pokemon, PokemonType } from '../fight/models/Pokemon';
 import { givenPokemon } from '../fight/utils';
 import { FightState, FightService, Log } from '../fight/fight.service';
 import { Observable } from 'rxjs';
+import { PokemonService } from '../pokemon/pokemon.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'combat-component',
@@ -16,28 +18,33 @@ export class CombatComponent implements OnInit {
   @Output() winner?: Pokemon;
   source!: Observable<Log | undefined>;
 
-  constructor(public fightService: FightService) {}
+  constructor(
+    public fightService: FightService,
+    private pokemonService: PokemonService,
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {}
 
-  ngOnInit(): void {
-    this.firstPokemon = givenPokemon({
-      name: 'Pikachu',
-      type: PokemonType.ELECTRIC,
-      hp: 35,
-      level: 1,
-      attack: 250,
-      defense: 40,
-      speed: 90,
-    });
+  async ngOnInit(): Promise<void> {
+    const firstPokemonName = this.route.snapshot.queryParamMap.get(
+      'firstPokemon',
+    );
 
-    this.secondPokemon = givenPokemon({
-      name: 'Salamèche',
-      type: PokemonType.FIRE,
-      hp: 39,
-      level: 1,
-      attack: 52,
-      defense: 43,
-      speed: 65,
-    });
+    const secondPokemonName = this.route.snapshot.queryParamMap.get(
+      'secondPokemon',
+    );
+
+    if (!firstPokemonName || !secondPokemonName) {
+      await this.router.navigate(['']);
+    } else {
+      this.firstPokemon = await this.pokemonService.getPokemon(
+        firstPokemonName,
+      );
+
+      this.secondPokemon = await this.pokemonService.getPokemon(
+        secondPokemonName,
+      );
+    }
   }
 
   async start(): Promise<void> {

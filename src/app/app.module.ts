@@ -9,8 +9,16 @@ import { LogColorDirective } from './combat/log-color.directive';
 import { PokemonComponent } from './pokemon/pokemon.component';
 import { PokemonLogColorDirective } from './combat/pokemon-log-color.directive';
 import { CustomDatePipe } from './pipes/custom-date.pipe';
-import {HttpClientModule} from "@angular/common/http";
+import { HttpClientModule } from '@angular/common/http';
 import { PokemonListComponent } from './pokemon-list/pokemon-list.component';
+import { RouterModule, Routes } from '@angular/router';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+
+const appRoutes: Routes = [
+  { path: '', component: PokemonListComponent },
+  { path: 'combat', component: CombatComponent },
+  { path: '**', component: PageNotFoundComponent },
+];
 
 @NgModule({
   declarations: [
@@ -23,8 +31,9 @@ import { PokemonListComponent } from './pokemon-list/pokemon-list.component';
     PokemonLogColorDirective,
     CustomDatePipe,
     PokemonListComponent,
+    PageNotFoundComponent,
   ],
-  imports: [BrowserModule, HttpClientModule],
+  imports: [RouterModule.forRoot(appRoutes), BrowserModule, HttpClientModule],
   providers: [],
   bootstrap: [AppComponent],
 })

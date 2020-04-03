@@ -1,10 +1,14 @@
-<p>pokemon-list works!</p>
+<h1 class="pokemon-list-title">Choose two pokemons!</h1>
 
-<div class="pokemon-list-container">
+<div>
+  <img class="pokemon-list-loading" *ngIf="loading" src="https://i.ya-webdesign.com/images/loading-gif-png-5.gif"/>
+</div>
+
+<div *ngIf="!loading" class="pokemon-list-container">
   <div class="pokemon-list-left">
     <div class="pokemon-list">
       <div *ngFor="let pokemon of pokemons">
-        <img [attr.src]="pokemon.sprites.front" [attr.alt]="pokemon.name" [attr.title]="pokemon.name"/>
+        <img (click)="selectFirstPokemon(pokemon)" [ngClass]="{ selected: firstPokemon === pokemon }" [attr.src]="pokemon.sprites.front" [attr.alt]="pokemon.name" [attr.title]="pokemon.name"/>
       </div>
     </div>
   </div>
@@ -12,8 +16,12 @@
   <div class="pokemon-list-right">
     <div class="pokemon-list">
       <div *ngFor="let pokemon of pokemons">
-        <img [attr.src]="pokemon.sprites.front" [attr.alt]="pokemon.name" [attr.title]="pokemon.name"/>
+        <img (click)="selectSecondPokemon(pokemon)" [ngClass]="{ selected: secondPokemon === pokemon }" [attr.src]="pokemon.sprites.front" [attr.alt]="pokemon.name" [attr.title]="pokemon.name"/>
       </div>
     </div>
   </div>
+</div>
+
+<div class="start-button-wrapper">
+  <button class="start-button" [disabled]="!firstPokemon || !secondPokemon" (click)="start()">Start combat</button>
 </div>

@@ -1,6 +1,7 @@
 import { Component, OnInit, Output } from '@angular/core';
 import { PokemonService } from '../pokemon/pokemon.service';
 import { Pokemon } from '../fight/models/Pokemon';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-pokemon-list',
@@ -9,25 +10,53 @@ import { Pokemon } from '../fight/models/Pokemon';
 })
 export class PokemonListComponent implements OnInit {
   @Output() pokemons!: Pokemon[];
+  @Output() firstPokemon?: Pokemon;
+  @Output() secondPokemon?: Pokemon;
+  @Output() loading: boolean;
 
-  constructor(private pokemonService: PokemonService) {}
+  constructor(private pokemonService: PokemonService, private router: Router) {
+    this.loading = true;
+  }
 
   async ngOnInit(): Promise<void> {
-    this.pokemons = await Promise.all([
-      this.pokemonService.getPokemon('ditto'),
-      this.pokemonService.getPokemon('bulbasaur'),
-      this.pokemonService.getPokemon('charmander'),
-      this.pokemonService.getPokemon('squirtle'),
-      this.pokemonService.getPokemon('caterpie'),
-      this.pokemonService.getPokemon('weedle'),
-      this.pokemonService.getPokemon('rattata'),
-      this.pokemonService.getPokemon('pikachu'),
-      this.pokemonService.getPokemon('sandslash'),
-      this.pokemonService.getPokemon('nidoqueen'),
-      this.pokemonService.getPokemon('vulpix'),
-      this.pokemonService.getPokemon('zubat'),
-      this.pokemonService.getPokemon('oddish'),
-      this.pokemonService.getPokemon('paras'),
-    ]);
+    try {
+      this.pokemons = await Promise.all([
+        this.pokemonService.getPokemon('ditto'),
+        this.pokemonService.getPokemon('bulbasaur'),
+        this.pokemonService.getPokemon('charmander'),
+        this.pokemonService.getPokemon('squirtle'),
+        this.pokemonService.getPokemon('caterpie'),
+        this.pokemonService.getPokemon('weedle'),
+        this.pokemonService.getPokemon('rattata'),
+        this.pokemonService.getPokemon('pikachu'),
+        this.pokemonService.getPokemon('sandslash'),
+        this.pokemonService.getPokemon('nidoqueen'),
+        this.pokemonService.getPokemon('vulpix'),
+        this.pokemonService.getPokemon('zubat'),
+        this.pokemonService.getPokemon('oddish'),
+        this.pokemonService.getPokemon('paras'),
+      ]);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  public selectFirstPokemon(pokemon: Pokemon): void {
+    this.firstPokemon = pokemon;
+  }
+
+  public selectSecondPokemon(pokemon: Pokemon): void {
+    this.secondPokemon = pokemon;
+  }
+
+  public async start(): Promise<void> {
+    await this.router.navigate(['combat'], {
+      queryParams: {
+        firstPokemon: this.firstPokemon?.name,
+        secondPokemon: this.secondPokemon?.name,
+      },
+    });
   }
 }
