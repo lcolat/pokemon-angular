@@ -1,7 +1,8 @@
-import { Component, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit, Output } from '@angular/core';
 import { PokemonService } from '../pokemon/pokemon.service';
 import { Pokemon } from '../fight/models/Pokemon';
 import { Router } from '@angular/router';
+import { givenPokemon } from '../fight/utils';
 
 @Component({
   selector: 'app-pokemon-list',
@@ -13,6 +14,7 @@ export class PokemonListComponent implements OnInit {
   @Output() firstPokemon?: Pokemon;
   @Output() secondPokemon?: Pokemon;
   @Output() loading: boolean;
+  @Input() pokemonToCreate: Partial<Pokemon> = {};
 
   constructor(private pokemonService: PokemonService, private router: Router) {
     this.loading = true;
@@ -21,20 +23,20 @@ export class PokemonListComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     try {
       this.pokemons = await Promise.all([
-        this.pokemonService.getPokemon('ditto'),
+        this.pokemonService.getPokemon('charizard'),
         this.pokemonService.getPokemon('bulbasaur'),
-        this.pokemonService.getPokemon('charmander'),
-        this.pokemonService.getPokemon('squirtle'),
-        this.pokemonService.getPokemon('caterpie'),
-        this.pokemonService.getPokemon('weedle'),
-        this.pokemonService.getPokemon('rattata'),
-        this.pokemonService.getPokemon('pikachu'),
-        this.pokemonService.getPokemon('sandslash'),
-        this.pokemonService.getPokemon('nidoqueen'),
-        this.pokemonService.getPokemon('vulpix'),
-        this.pokemonService.getPokemon('zubat'),
-        this.pokemonService.getPokemon('oddish'),
-        this.pokemonService.getPokemon('paras'),
+        // this.pokemonService.getPokemon('charmander'),
+        // this.pokemonService.getPokemon('squirtle'),
+        // this.pokemonService.getPokemon('caterpie'),
+        // this.pokemonService.getPokemon('weedle'),
+        // this.pokemonService.getPokemon('rattata'),
+        // this.pokemonService.getPokemon('pikachu'),
+        // this.pokemonService.getPokemon('sandslash'),
+        // this.pokemonService.getPokemon('nidoqueen'),
+        // this.pokemonService.getPokemon('vulpix'),
+        // this.pokemonService.getPokemon('zubat'),
+        // this.pokemonService.getPokemon('oddish'),
+        // this.pokemonService.getPokemon('paras'),
       ]);
     } catch (err) {
       console.error(err);
@@ -58,5 +60,11 @@ export class PokemonListComponent implements OnInit {
         secondPokemon: this.secondPokemon?.name,
       },
     });
+  }
+
+  public submitPokemon() {
+    const pokemon = givenPokemon(this.pokemonToCreate);
+    //this.firstPokemon = this.pokemonService.getPokemon('paras');
+    return pokemon;
   }
 }

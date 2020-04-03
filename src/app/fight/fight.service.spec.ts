@@ -1,9 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { FightService, FightState } from './fight.service';
+import { FightService, FightState, Log } from './fight.service';
 import { givenPokemon } from './utils';
 import { Attack, AttackNature } from './models/Attack';
 import { PokemonType } from './models/Pokemon';
-import { take } from 'rxjs/operators';
 
 describe('FightService', () => {
   let service: FightService;
@@ -163,10 +162,10 @@ describe('FightService', () => {
     expect(fs.defender).toBe(attacker);
   });
 
-  it('should start a FightService and return the winner (1)', async () => {
+  it('should start a FightService and return the winner (1)', (done) => {
     const fs = new FightService();
 
-    const winner = await fs
+    const observer = fs
       .init(
         givenPokemon({
           defense: 100,
@@ -206,16 +205,20 @@ describe('FightService', () => {
         }),
         10,
       )
-      .pipe(take(1))
-      .toPromise();
-
-    expect(winner).toBe(fs.secondPokemon);
+      .subscribe((event: Log | undefined) => {
+        if (event?.type === 'end') {
+          expect(event.winner).toBe(fs.secondPokemon);
+          expect(event.looser).toBe(fs.firstPokemon);
+          observer.unsubscribe();
+          done();
+        }
+      });
   });
 
-  it('should start a FightService and return the winner (2)', async () => {
+  it('should start a FightService and return the winner (2)', (done) => {
     const fs = new FightService();
 
-    const winner = await fs
+    const observer = fs
       .init(
         givenPokemon({
           defense: 100,
@@ -255,10 +258,14 @@ describe('FightService', () => {
         }),
         10,
       )
-      .pipe(take(1))
-      .toPromise();
-
-    expect(winner).toBe(fs.firstPokemon);
+      .subscribe((event: Log | undefined) => {
+        if (event?.type === 'end') {
+          expect(event.winner).toBe(fs.firstPokemon);
+          expect(event.looser).toBe(fs.secondPokemon);
+          observer.unsubscribe();
+          done();
+        }
+      });
   });
 
   it('should not start twice a FightService', () => {

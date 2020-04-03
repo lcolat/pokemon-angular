@@ -16,7 +16,6 @@ interface MovePokeAPI {
 }
 
 interface MoveMetaPokeAPI {
-  name: string;
   crit_rate: number;
 }
 
@@ -24,6 +23,7 @@ export type PokemonMoveAPI = {
   accuracy: number;
   type: Detail;
   meta: MoveMetaPokeAPI;
+  name: string;
   power: number;
 };
 

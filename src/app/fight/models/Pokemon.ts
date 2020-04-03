@@ -16,22 +16,24 @@ export enum PokemonType {
 
 export class Pokemon {
   constructor(
-    public readonly name: string,
-    public readonly type: PokemonType,
+    public name: string,
+    public type: PokemonType,
     public hp: number,
     public level: number,
-    public readonly attack: number,
-    public readonly defense: number,
-    public readonly speed: number,
+    public attack: number,
+    public defense: number,
+    public speed: number,
     public readonly attacks: Attack[],
     public readonly sprites: Sprites,
     public readonly color?: string,
+    public isLoser?: boolean,
   ) {
     if (this.attacks.length === 0) {
       throw new Error('No attacks defined');
     }
 
     this.color = color ?? this.generateRandomColor();
+    this.isLoser = isLoser ?? false;
   }
 
   private generateRandomColor(): string {

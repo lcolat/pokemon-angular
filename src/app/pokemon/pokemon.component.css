@@ -1,7 +1,38 @@
+.attacker-container{
+  width: 200px;
+}
+.defender-container{
+  width: 150px;
+
+}
 .attacker-img{
-  width: 160%;
+  display: block;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .defender-img{
-  width: 140%;
+  display: block;
+  margin: 0 auto;
+  width: 100%;
+}
+.health-container {
+  background-color: #ccc;
+  height: 8px;
+  width: 150px;
+  margin: 0 auto;
+  border: solid 1px #aaa;
+}
+
+.health-bar {
+  background-color: #007f00;
+  width: inherit;
+  height: 8px;
+  /*position: relative;*/
+}
+.health-bar-text {
+  /*position: relative;*/
+  bottom: 80px;
+
+  margin: 0 auto;
 }

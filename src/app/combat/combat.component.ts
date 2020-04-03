@@ -1,7 +1,6 @@
 import { Component, Input, OnInit, Output } from '@angular/core';
-import { Pokemon, PokemonType } from '../fight/models/Pokemon';
-import { givenPokemon } from '../fight/utils';
-import { FightState, FightService, Log } from '../fight/fight.service';
+import { Pokemon } from '../fight/models/Pokemon';
+import { FightService, FightState, Log } from '../fight/fight.service';
 import { Observable } from 'rxjs';
 import { PokemonService } from '../pokemon/pokemon.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -12,11 +11,13 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./combat.component.css'],
 })
 export class CombatComponent implements OnInit {
-  @Input() firstPokemon!: Pokemon;
-  @Input() secondPokemon!: Pokemon;
+  @Input() firstPokemon?: Pokemon;
+  @Input() secondPokemon?: Pokemon;
   @Output() logs: Log[] = [];
   @Output() winner?: Pokemon;
   source!: Observable<Log | undefined>;
+  isStarted = false;
+  isEnd = false;
 
   constructor(
     public fightService: FightService,
@@ -48,17 +49,11 @@ export class CombatComponent implements OnInit {
   }
 
   async start(): Promise<void> {
-    const startButton = document.getElementById(
-      'startButton',
-    ) as HTMLInputElement;
+    if (!this.firstPokemon || !this.secondPokemon) {
+      return;
+    }
 
-    startButton.disabled = true;
-
-    const pauseButton = document.getElementById(
-      'pauseButton',
-    ) as HTMLInputElement;
-
-    pauseButton.hidden = false;
+    this.isStarted = true;
 
     this.source = this.fightService.init(
       this.firstPokemon,
@@ -75,8 +70,20 @@ export class CombatComponent implements OnInit {
 
       if (log.type === 'end') {
         subscription.unsubscribe();
+        this.hideLoser(log.looser);
+        this.isEnd = true;
       }
     });
+  }
+
+  private hideLoser(loser: Pokemon): void {
+    if (!this.firstPokemon || !this.secondPokemon) {
+      return;
+    }
+
+    loser.name === this.firstPokemon.name
+      ? (this.firstPokemon.isLoser = true)
+      : (this.secondPokemon.isLoser = true);
   }
 
   handlePlay(fightState: FightState): void {

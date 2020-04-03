@@ -9,11 +9,18 @@ import { Pokemon } from '../fight/models/Pokemon';
 export class PokemonComponent implements OnInit {
   @Input('pokemon') pokemon!: Pokemon;
   @Input('isAttacker') isAttacker!: boolean;
-  sprite = '';
+  initialHealth!: number;
+  sprite!: string;
 
   ngOnInit(): void {
     this.sprite = this.isAttacker
-      ? 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/149.png'
-      : 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png';
+      ? this.pokemon.sprites.back
+      : this.pokemon.sprites.front;
+
+    this.initialHealth = this.pokemon.hp;
+  }
+
+  get hpPercentage() {
+    return Math.floor(this.pokemon.hp * (100 / this.initialHealth));
   }
 }

@@ -25,3 +25,43 @@
 <div class="start-button-wrapper">
   <button class="start-button" [disabled]="!firstPokemon || !secondPokemon" (click)="start()">Start combat</button>
 </div>
+
+<form (ngSubmit)="submitPokemon()">
+  <label>Name:</label>
+  <input
+    name="name"
+    type="text"
+    [(ngModel)]="pokemonToCreate.name"
+  >
+  <label>HP:</label>
+  <input
+    name="name"
+    type="number"
+    [(ngModel)]="pokemonToCreate.hp"
+  >
+  <label>type:</label>
+  <input
+    name="hp"
+    type="text"
+    [(ngModel)]="pokemonToCreate.hp"
+  >
+  <label>attack:</label>
+  <input
+    name="name"
+    type="number"
+    [(ngModel)]="pokemonToCreate.attack"
+  >
+  <label>defense:</label>
+  <input
+    name="name"
+    type="number"
+    [(ngModel)]="pokemonToCreate.defense"
+  >
+  <label>speed:</label>
+  <input
+    name="name"
+    type="number"
+    [(ngModel)]="pokemonToCreate.speed"
+  >
+  <button type="submit">combattre dracaufeu</button>
+</form>

@@ -57,13 +57,22 @@ export class PokemonService {
       rawPokemon.stats[4].base_stat,
       rawPokemon.stats[3].base_stat,
       rawPokemon.stats[0].base_stat,
-      moves.map((m) => ({
-        nature: m.type.name as AttackNature,
-        criticalCoefficient: Math.max(1, m.meta.crit_rate),
-        name: m.meta.name,
-        basePower: m.power,
-        precision: m.accuracy,
-      })),
+      moves
+        .filter(
+          (m) =>
+            typeof m.type.name === 'string' &&
+            typeof m.meta.crit_rate === 'number' &&
+            typeof m.name === 'string' &&
+            typeof m.power === 'number' &&
+            typeof m.accuracy === 'number',
+        )
+        .map((m) => ({
+          nature: m.type.name as AttackNature,
+          criticalCoefficient: Math.max(1, m.meta.crit_rate),
+          name: m.name,
+          basePower: m.power,
+          precision: m.accuracy,
+        })),
       {
         front: rawPokemon.sprites.front_default,
         back: rawPokemon.sprites.back_default,

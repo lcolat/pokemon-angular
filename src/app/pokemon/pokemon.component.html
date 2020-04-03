@@ -1,1 +1,12 @@
-<img [src]="sprite" [alt]="pokemon.name" [ngClass]="{'attacker-img': isAttacker, 'defender-img': !isAttacker}">
+<div [ngClass]="{ 'attacker-container': isAttacker, 'defender-container': !isAttacker }">
+  <div class="health-container">
+    <div id="health-bar" class="health-bar" [ngStyle]="{'width': hpPercentage+'%'}"></div>
+    <div class="health-bar-text" >{{ hpPercentage }}%</div>
+  </div>
+
+  <img
+    [src]="sprite"
+    [alt]="pokemon.name"
+    [ngClass]="{ 'attacker-img': isAttacker, 'defender-img': !isAttacker }"
+  />
+</div>

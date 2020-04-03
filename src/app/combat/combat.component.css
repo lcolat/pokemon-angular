@@ -11,18 +11,19 @@
   background-repeat: no-repeat;
   width: 512px;
   height: 288px;
+  position: relative;
 }
 
 .attacker {
   position: absolute;
-  left: 85px;
-  top: 225px;
+  left: 110px;
+  bottom: -30px;
 }
 
 .defender {
   position: absolute;
-  left: 330px;
-  top: 195px;
+  left: 300px;
+  top: 30px;
 }
 
 .logs {

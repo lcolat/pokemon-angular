@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { CombatComponent } from './combat.component';
-import { PlayButtonComponent } from '../play-button/play-button.component';
+import { RouterTestingModule } from '@angular/router/testing';
+import { appRoutes } from '../app.module';
+import { PokemonService } from '../pokemon/pokemon.service';
 
 describe('CombatComponent', () => {
   let component: CombatComponent;
@@ -9,7 +11,9 @@ describe('CombatComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [CombatComponent, PlayButtonComponent],
+      imports: [RouterTestingModule.withRoutes(appRoutes), PokemonService],
+      declarations: [CombatComponent],
+      providers: [PokemonService],
     }).compileComponents();
   }));
 
@@ -23,4 +27,9 @@ describe('CombatComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('play button should be hidden by default', () => {
+    expect(view.querySelector('startButton').hidden).toBeTruthy();
+  });
+
 });

@@ -1,18 +1,15 @@
 import { TestBed, async } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { CombatComponent } from './combat/combat.component';
-import { LikeButtonComponent } from './like-button/like-button.component';
 import { PlayButtonComponent } from './play-button/play-button.component';
+import { appRoutes } from './app.module';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('AppComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        AppComponent,
-        CombatComponent,
-        LikeButtonComponent,
-        PlayButtonComponent,
-      ],
+      imports: [RouterTestingModule.withRoutes(appRoutes)],
+      declarations: [AppComponent, CombatComponent, PlayButtonComponent],
     }).compileComponents();
   }));
 
@@ -26,14 +23,5 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     expect(app.title).toEqual('Application');
-  });
-
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.content span').textContent).toContain(
-      'Application app is running!',
-    );
   });
 });

@@ -1,20 +1,8 @@
-import { Pokemon, PokemonType, Sprites } from './models/Pokemon';
-import { Attack, AttackNature } from './models/Attack';
+import { Pokemon, PokemonType } from './models/Pokemon';
+import { AttackNature } from './models/Attack';
 import * as uuid from 'uuid';
 
-export interface PokemonData {
-  name?: string;
-  type?: PokemonType;
-  hp?: number;
-  level?: number;
-  attack?: number;
-  defense?: number;
-  speed?: number;
-  attacks?: Attack[];
-  sprites?: Sprites;
-}
-
-export function givenPokemon(data?: PokemonData): Pokemon {
+export function givenPokemon(data?: Partial<Pokemon>): Pokemon {
   return new Pokemon(
     data?.name ?? uuid.v4(),
     data?.type ?? PokemonType.FIRE,
@@ -33,8 +21,10 @@ export function givenPokemon(data?: PokemonData): Pokemon {
       },
     ],
     data?.sprites ?? {
-      back: '',
-      front: '',
+      back:
+        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/28.png',
+      front:
+        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/29.png',
     },
   );
 }
