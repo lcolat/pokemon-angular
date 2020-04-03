@@ -11,7 +11,7 @@ import { CustomDatePipe } from './pipes/custom-date.pipe';
 import { PokemonListComponent } from './pokemon-list/pokemon-list.component';
 import { RouterModule, Routes } from '@angular/router';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
-import {FormsModule} from "@angular/forms";
+import { FormsModule } from '@angular/forms';
 
 export const appRoutes: Routes = [
   { path: '', component: PokemonListComponent },

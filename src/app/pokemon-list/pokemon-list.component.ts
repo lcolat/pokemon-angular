@@ -25,18 +25,18 @@ export class PokemonListComponent implements OnInit {
       this.pokemons = await Promise.all([
         this.pokemonService.getPokemon('charizard'),
         this.pokemonService.getPokemon('bulbasaur'),
-        // this.pokemonService.getPokemon('charmander'),
-        // this.pokemonService.getPokemon('squirtle'),
-        // this.pokemonService.getPokemon('caterpie'),
-        // this.pokemonService.getPokemon('weedle'),
-        // this.pokemonService.getPokemon('rattata'),
-        // this.pokemonService.getPokemon('pikachu'),
-        // this.pokemonService.getPokemon('sandslash'),
-        // this.pokemonService.getPokemon('nidoqueen'),
-        // this.pokemonService.getPokemon('vulpix'),
-        // this.pokemonService.getPokemon('zubat'),
-        // this.pokemonService.getPokemon('oddish'),
-        // this.pokemonService.getPokemon('paras'),
+        this.pokemonService.getPokemon('charmander'),
+        this.pokemonService.getPokemon('squirtle'),
+        this.pokemonService.getPokemon('caterpie'),
+        this.pokemonService.getPokemon('weedle'),
+        this.pokemonService.getPokemon('rattata'),
+        this.pokemonService.getPokemon('pikachu'),
+        this.pokemonService.getPokemon('sandslash'),
+        this.pokemonService.getPokemon('nidoqueen'),
+        this.pokemonService.getPokemon('vulpix'),
+        this.pokemonService.getPokemon('zubat'),
+        this.pokemonService.getPokemon('oddish'),
+        this.pokemonService.getPokemon('paras'),
       ]);
     } catch (err) {
       console.error(err);
@@ -62,9 +62,7 @@ export class PokemonListComponent implements OnInit {
     });
   }
 
-  public submitPokemon() {
-    const pokemon = givenPokemon(this.pokemonToCreate);
-    //this.firstPokemon = this.pokemonService.getPokemon('paras');
-    return pokemon;
+  public submitPokemon(): void {
+    console.log('NEW POKEMON', givenPokemon(this.pokemonToCreate));
   }
 }

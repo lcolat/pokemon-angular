@@ -31,37 +31,41 @@
   <input
     name="name"
     type="text"
+    required maxlength="12"
+    #nameInput="ngModel"
     [(ngModel)]="pokemonToCreate.name"
-  >
+  ><span [hidden]="!nameInput.errors?.required">Name is required</span><br>
   <label>HP:</label>
   <input
-    name="name"
-    type="number"
-    [(ngModel)]="pokemonToCreate.hp"
-  >
-  <label>type:</label>
-  <input
     name="hp"
-    type="text"
+    type="number"
+    required
+    #hpInput="ngModel"
     [(ngModel)]="pokemonToCreate.hp"
-  >
+  ><span [hidden]="!hpInput.errors?.required">hp is required</span><br>
   <label>attack:</label>
   <input
-    name="name"
+    name="attack"
     type="number"
+    required
+    #attackInput="ngModel"
     [(ngModel)]="pokemonToCreate.attack"
-  >
+  ><span [hidden]="!attackInput.errors?.required">attack is required</span><br>
   <label>defense:</label>
   <input
-    name="name"
+    name="defense"
     type="number"
+    required
+    #defenseInput="ngModel"
     [(ngModel)]="pokemonToCreate.defense"
-  >
+  ><span [hidden]="!defenseInput.errors?.required">defense is required</span><br>
   <label>speed:</label>
   <input
-    name="name"
+    name="speed"
     type="number"
+    required
+    #speedInput="ngModel"
     [(ngModel)]="pokemonToCreate.speed"
-  >
-  <button type="submit">combattre dracaufeu</button>
+  ><span [hidden]="!speedInput.errors?.required">speed is required</span><br>
+  <button type="submit">create a pokemon</button>
 </form>

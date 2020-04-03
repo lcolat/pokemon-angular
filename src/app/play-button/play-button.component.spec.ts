@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+
 import { PlayButtonComponent } from './play-button.component';
 
 describe('PlayButtonComponent', () => {
